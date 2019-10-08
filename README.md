@@ -31,6 +31,50 @@
 
 `sc.nextLine()`을 이용하여 테스트 케이스를 읽어온다. `startWith()`함수를 이용하여 `north`와 `west`값을 읽고, 역순으로 각도를 계산하기위해 `Stack`을 이용하여 저장하였다. 위 문제는 input에 따라 output에 패턴이있었다. 방향의 갯수가 `2`개 이하일 때 output은 정수이며 그 이상일때 `(분자)/(분모)`의 형태를 띈다. `분모`가 `1`인 경우에 `분자`만 출력하면 되므로 `분자`와 `분모`를 담는 변수를 선언하여 `Stack`에서 방향을 `pop()`하여 그에 맞는 연산을 `분자`에 적용하고 `분모`를 두배로 해주었다. `Stack.isEmpty()`가 되면 반복을 종료하고 기약분수로 나누어 떨어지도록 `분자`와 `분모`를 조정한다. 마지막으로, `분모`의 값이 `1`이면 테스트케이스의 번호와 `분자`만 출력하고 그렇지 않다면 `분자/분모`형태로 출력하여 완성하였다.
 
+```java
+for(int test_case = 1; test_case <= T; test_case++) {
+  Stack<Boolean> directionStack = new Stack<>();
+  String s = sc.nextLine();
+  while (s.length() > 0) {
+    if (s.startsWith("north")) {
+      directionStack.push(false);
+      s = s.substring(5);
+    } else if (s.startsWith("west")) {
+      directionStack.push(true);
+      s = s.substring(4);
+    }
+  }
+
+  long molecular;
+  if (directionStack.peek() == false) {
+    molecular = 0;
+  } else { // (directionStack.peek() == true)
+    molecular = 90;
+  }
+  directionStack.pop();
+  int denominator = 1;
+
+  while (!directionStack.isEmpty()) {
+    boolean dir = directionStack.pop();
+    if (dir == false)
+      molecular = molecular*2 - 90;
+    else 
+      molecular = molecular*2 + 90;
+    denominator = denominator << 1;
+  }
+  if (denominator > 1) {
+    molecular /= 2;
+    denominator /= 2;
+  }
+  if (denominator == 1) {
+    System.out.println("#"+test_case+" "+molecular);
+  } else {
+    System.out.println("#"+test_case+" "+molecular+"/"+denominator);
+  }
+
+}
+```
+
 ### 3. 이상한점...
 
 프로그래머스에서만 문제를 풀다가 SW Expert Academy에서 오랜만에 문제를 풀어보았는데 컴파일 후 TEST를 Run하였을 때 `Stack Overflow`가 났다. 스택에 저장하는 자료형을 `Integer`대신 `Boolean`으로 바꾸고 곱하기`2`연산들을 모두 시프트연산자를 이용하는것으로 수정하였으나 결과는 그대로였다.
